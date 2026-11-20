@@ -37,6 +37,7 @@ def transaction(db: sqlite3.Connection, *, write=False):
 
 
 def initialize(db: sqlite3.Connection):
+    from lake.custody.pack_store import PackStore
     from lake.custody.storage import VolumeStorage
     from lake.intake.batch_store import BatchStore
     from lake.publication.daybook_store import DaybookStore
@@ -47,6 +48,7 @@ def initialize(db: sqlite3.Connection):
         initialize_rules(db)
         VolumeStorage(db).initialize()
         DaybookStore(db).initialize()
+        PackStore(db).initialize()
 
 
 def open_lake(path) -> sqlite3.Connection:

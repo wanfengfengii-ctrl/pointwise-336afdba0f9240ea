@@ -27,6 +27,9 @@ python3 -B demo.py
 | `lake.custody.cold_copy` | `archive_volume(db, volume_id, target)` 将已发布卷存到冷目标并从该目标实际复读，返回 `InspectionRecord`。冷正文位置由目标和卷身份共同寻址。 |
 | `lake.custody.retirement` | `retire_volume(db, volume_id, record)` 校对原验卷记录和当前实物，移除在线正文，返回固定卷身份。凭同一仍有效记录重试可重领结果。 |
 | `lake.reading.daybook` | `read_day(db, number)` 返回 `ReadResult` 或 `ReadUnavailable`。历史明细按清单和批内原序交付。缺卷标识按清单首次出现排列，`details` 为空。 |
+| `lake.custody.inspection` | `admit_pack(db, media, pack_id, slices)` 按包号与有序区间实读并核对固定卷长度与指纹，返回 `PackSlice` 元组。同包同清单重领，异清单 `ConflictError`，坏片段 `DataIntegrityError`。 |
+| `lake.custody.retirement` | `authorize_pull(db, media, pack_id)` 为已验收包签发 `PullPermit` 或报告 `PullBlocked`。须由另一已验收未获许可包当场覆盖固定账所用每卷。 |
+| `lake.reading.daybook` | `read_cold_day(db, media, number)` 仅用已验包片段冷读，返回含 `evidence` 的 `ColdReadResult` 或按原序报告缺卷的 `ReadUnavailable`。 |
 
 来件允许 Python 整数和 `None`。零有效，布尔值、浮点值和数字文本非法。整数界限和数值在 SQLite 与卷编码中使用十六进制文本，公开接口按整数计算；缺测使用独立空值。空批可被选入定稿，只有非空批生成卷和分站行。冻结正文包括原值、判定、站点、日期、批号和源位置，独立于账的账号。复用卷时校验实际完整正文并沿用现有冷热位置。
 
